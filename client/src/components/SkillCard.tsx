@@ -20,10 +20,10 @@ const SkillCard = ({ user, onRequestSwap }: SkillCardProps) => {
   const fullName = `${user.firstName} ${user.lastName}`;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group cursor-pointer border border-transparent hover:border-blue-200 dark:hover:border-blue-700">
       {/* Header */}
       <div className="flex items-center space-x-3 mb-4">
-        <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
+        <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold group-hover:scale-110 transition-transform duration-300 shadow-lg">
           {getInitials(fullName)}
         </div>
         <div className="flex-1">
@@ -129,9 +129,14 @@ const SkillCard = ({ user, onRequestSwap }: SkillCardProps) => {
       {/* Action Button */}
       <button
         onClick={() => onRequestSwap(user._id)}
-        className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white py-2 px-4 rounded-lg font-medium transition-all duration-200"
+        className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white py-2 px-4 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
       >
-        Request Swap
+        <span className="flex items-center justify-center">
+          Request Swap
+          <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+          </svg>
+        </span>
       </button>
     </div>
   );

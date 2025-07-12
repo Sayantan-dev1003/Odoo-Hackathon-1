@@ -3,17 +3,16 @@ import { Inter } from 'next/font/google';
 import '@/styles/globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import { Toaster } from 'react-hot-toast';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'SkillLink - Peer-to-Peer Skill Exchange',
-  description: 'Exchange skills with others in your community',
+  title: 'Admin Panel - SkillLink',
+  description: 'Admin panel for SkillLink platform management',
 };
 
-export default function RootLayout({
+export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -23,10 +22,9 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthProvider>
           <Navbar />
-          <main className="min-h-screen bg-gray-50">
+          <main className="min-h-screen bg-gray-100 dark:bg-gray-900">
             {children}
           </main>
-          <Footer />
           <Toaster
             position="top-right"
             toastOptions={{
@@ -41,4 +39,4 @@ export default function RootLayout({
       </body>
     </html>
   );
-}
+} 

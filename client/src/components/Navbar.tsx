@@ -2,24 +2,33 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, logout } = useAuth();
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
     document.documentElement.classList.toggle('dark');
   };
 
+  const handleLogout = () => {
+    logout();
+    router.push('/');
+  };
+
   const navItems = [
     { name: 'Home', href: '/' },
-    { name: 'Browse', href: '/browse' },
-    { name: 'Profile', href: '/profile' },
-    { name: 'Swaps', href: '/swaps' },
-    { name: 'Admin', href: '/admin' },
+    ...(user ? [
+      { name: 'Browse', href: '/browse' },
+      { name: 'Swaps', href: '/swaps' },
+    ] : []),
+    ...(user?.role === 'admin' ? [{ name: 'Admin', href: '/admin' }] : []),
   ];
 
   return (
@@ -37,7 +46,7 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-6">
             {navItems.map((item) => (
               <Link
                 key={item.name}
@@ -51,6 +60,20 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
+            
+            {/* Profile Link - Moved to right */}
+            {user && (
+              <Link
+                href="/profile"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                  pathname === '/profile'
+                    ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
+                    : 'text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400'
+                }`}
+              >
+                Profile
+              </Link>
+            )}
             
             {/* Dark Mode Toggle */}
             <button
@@ -67,6 +90,28 @@ const Navbar = () => {
                 </svg>
               )}
             </button>
+            
+            {/* Authentication Buttons */}
+            {user ? (
+              <div className="flex items-center space-x-3">
+                <span className="text-sm text-gray-700 dark:text-gray-300">
+                  Welcome, {user.firstName}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm font-medium transition-colors duration-200"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md text-sm font-medium transition-colors duration-200"
+              >
+                Login
+              </Link>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -104,6 +149,48 @@ const Navbar = () => {
                   {item.name}
                 </Link>
               ))}
+              
+              {/* Mobile Profile Link */}
+              {user && (
+                <Link
+                  href="/profile"
+                  className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
+                    pathname === '/profile'
+                      ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
+                      : 'text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400'
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Profile
+                </Link>
+              )}
+              
+              {/* Mobile Authentication */}
+              {user ? (
+                <>
+                  <div className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 border-t border-gray-200 dark:border-gray-600 mt-2 pt-2">
+                    Welcome, {user.firstName}
+                  </div>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setIsMenuOpen(false);
+                    }}
+                    className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors duration-200"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <Link
+                  href="/login"
+                  className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200 border-t border-gray-200 dark:border-gray-600 mt-2 pt-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Login
+                </Link>
+              )}
+              
               <button
                 onClick={toggleDarkMode}
                 className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400 transition-colors duration-200"
