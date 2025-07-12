@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsDateString, IsEnum } from 'class-validator';
+import { IsString, IsOptional, IsDateString, IsEnum, IsDate } from 'class-validator';
 import { SwapStatus } from '../schemas/swap.schema';
 
 export class CreateSwapDto {
@@ -32,4 +32,8 @@ export class UpdateSwapDto {
   @IsOptional()
   @IsDateString()
   scheduledDate?: string;
-} 
+
+  @IsOptional()
+  @IsDate()
+  completedDate?: Date;
+}

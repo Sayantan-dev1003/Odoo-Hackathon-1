@@ -15,6 +15,7 @@ import { UserService } from './services/user.service';
 import { SwapService } from './services/swap.service';
 import { RatingService } from './services/rating.service';
 import { SkillService } from './services/skill.service';
+import { SeederService } from './utils/seeder';
 
 import { User, UserSchema } from './schemas/user.schema';
 import { Swap, SwapSchema } from './schemas/swap.schema';
@@ -24,7 +25,9 @@ import { Skill, SkillSchema } from './schemas/skill.schema';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRoot(process.env.MONGODB_URI || 'mongodb://localhost:27017/skill-link'),
+    MongooseModule.forRoot(
+      process.env.MONGODB_URI || 'mongodb://localhost:27017/skill-link',
+    ),
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: Swap.name, schema: SwapSchema },
@@ -46,6 +49,7 @@ import { Skill, SkillSchema } from './schemas/skill.schema';
     SwapService,
     RatingService,
     SkillService,
+    SeederService,
   ],
 })
 export class AppModule {}

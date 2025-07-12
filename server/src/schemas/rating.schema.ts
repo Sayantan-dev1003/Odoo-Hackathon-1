@@ -24,4 +24,4 @@ export class Rating {
   tags: string[];
 }
 
-export const RatingSchema = SchemaFactory.createForClass(Rating); 
+export const RatingSchema = SchemaFactory.createForClass(Rating);

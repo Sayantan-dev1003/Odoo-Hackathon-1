@@ -21,4 +21,4 @@ export class Skill {
   isActive: boolean;
 }
 
-export const SkillSchema = SchemaFactory.createForClass(Skill); 
+export const SkillSchema = SchemaFactory.createForClass(Skill);

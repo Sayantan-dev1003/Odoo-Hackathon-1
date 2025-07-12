@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Skill, SkillDocument } from '../schemas/skill.schema';
 import { User, UserDocument } from '../schemas/user.schema';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class SeederService {
@@ -13,16 +14,56 @@ export class SeederService {
 
   async seedSkills() {
     const skills = [
-      { name: 'JavaScript', category: 'Programming', description: 'Web development language' },
-      { name: 'Python', category: 'Programming', description: 'General purpose programming language' },
-      { name: 'React', category: 'Frontend', description: 'JavaScript library for building user interfaces' },
-      { name: 'Node.js', category: 'Backend', description: 'JavaScript runtime for server-side development' },
-      { name: 'Cooking', category: 'Lifestyle', description: 'Culinary arts and food preparation' },
-      { name: 'Photography', category: 'Arts', description: 'Art and practice of creating images' },
-      { name: 'Guitar', category: 'Music', description: 'String instrument playing' },
-      { name: 'Spanish', category: 'Language', description: 'Spanish language learning' },
-      { name: 'Yoga', category: 'Fitness', description: 'Physical and mental exercise practice' },
-      { name: 'Drawing', category: 'Arts', description: 'Visual art form using various drawing instruments' },
+      {
+        name: 'JavaScript',
+        category: 'Programming',
+        description: 'Web development language',
+      },
+      {
+        name: 'Python',
+        category: 'Programming',
+        description: 'General purpose programming language',
+      },
+      {
+        name: 'React',
+        category: 'Frontend',
+        description: 'JavaScript library for building user interfaces',
+      },
+      {
+        name: 'Node.js',
+        category: 'Backend',
+        description: 'JavaScript runtime for server-side development',
+      },
+      {
+        name: 'Cooking',
+        category: 'Lifestyle',
+        description: 'Culinary arts and food preparation',
+      },
+      {
+        name: 'Photography',
+        category: 'Arts',
+        description: 'Art and practice of creating images',
+      },
+      {
+        name: 'Guitar',
+        category: 'Music',
+        description: 'String instrument playing',
+      },
+      {
+        name: 'Spanish',
+        category: 'Language',
+        description: 'Spanish language learning',
+      },
+      {
+        name: 'Yoga',
+        category: 'Fitness',
+        description: 'Physical and mental exercise practice',
+      },
+      {
+        name: 'Drawing',
+        category: 'Arts',
+        description: 'Visual art form using various drawing instruments',
+      },
     ];
 
     for (const skill of skills) {
@@ -38,11 +79,12 @@ export class SeederService {
   async seedAdminUser() {
     const adminEmail = 'admin@skilllink.com';
     const existingAdmin = await this.userModel.findOne({ email: adminEmail });
-    
+
     if (!existingAdmin) {
+      const hashedPassword = await bcrypt.hash('admin123', 10);
       await this.userModel.create({
         email: adminEmail,
-        password: '$2a$10$rQZ8K9mN2pL1vX3yU7wE4t.5sA6bC8dF0gH1iJ2kL3mN4oP5qR6sT7uV8wX9yZ0',
+        password: hashedPassword,
         firstName: 'Admin',
         lastName: 'User',
         role: 'admin',
@@ -55,4 +97,4 @@ export class SeederService {
       console.log('Admin user seeded successfully');
     }
   }
-} 
+}

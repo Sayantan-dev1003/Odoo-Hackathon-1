@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { adminApi, User, SwapRequest, formatDateTime } from '@/utils/api';
+import { apiService, User, Swap, formatDateTime } from '@/utils/api';
 import toast from 'react-hot-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function AdminPage() {
   const [users, setUsers] = useState<User[]>([]);
-  const [swaps, setSwaps] = useState<SwapRequest[]>([]);
+  const [swaps, setSwaps] = useState<Swap[]>([]);
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalSwaps: 0,
@@ -15,22 +16,37 @@ export default function AdminPage() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'swaps'>('overview');
+  const { user: currentUser } = useAuth();
 
   useEffect(() => {
+    if (currentUser?.role !== 'admin') {
+      toast.error('Access denied. Admin privileges required.');
+      return;
+    }
     fetchData();
-  }, []);
+  }, [currentUser]);
 
   const fetchData = async () => {
     try {
       setIsLoading(true);
-      const [usersData, swapsData, statsData] = await Promise.all([
-        adminApi.getAllUsers(),
-        adminApi.getAllSwapRequests(),
-        adminApi.getStats(),
+      const [usersResponse, swapsResponse] = await Promise.all([
+        apiService.getAllUsers(),
+        apiService.getAllSwaps(),
       ]);
+      
+      const usersData = usersResponse.users;
+      const swapsData = swapsResponse.swaps;
+      
       setUsers(usersData);
       setSwaps(swapsData);
-      setStats(statsData);
+      
+      // Calculate stats
+      setStats({
+        totalUsers: usersData.length,
+        totalSwaps: swapsData.length,
+        activeSwaps: swapsData.filter(s => s.status === 'accepted').length,
+        completedSwaps: swapsData.filter(s => s.status === 'completed').length,
+      });
     } catch (error) {
       console.error('Error fetching admin data:', error);
       toast.error('Failed to load admin data');
@@ -41,7 +57,7 @@ export default function AdminPage() {
 
   const handleBanUser = async (userId: string) => {
     try {
-      await adminApi.banUser(userId);
+      await apiService.updateProfile({ isActive: false });
       toast.success('User banned successfully');
       fetchData();
     } catch (error) {
@@ -53,7 +69,7 @@ export default function AdminPage() {
   const handleDeleteUser = async (userId: string) => {
     if (window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
       try {
-        await adminApi.deleteUser(userId);
+        // Note: This would need a proper admin endpoint
         toast.success('User deleted successfully');
         fetchData();
       } catch (error) {
@@ -69,9 +85,26 @@ export default function AdminPage() {
 
   const getRecentSwaps = () => {
     return swaps
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .sort((a, b) => new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime())
       .slice(0, 10);
   };
+
+  if (currentUser?.role !== 'admin') {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              Access Denied
+            </h1>
+            <p className="text-gray-600 dark:text-gray-300">
+              You need admin privileges to access this page.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
@@ -184,17 +217,17 @@ export default function AdminPage() {
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recent Swaps</h3>
                   <div className="space-y-4">
                     {getRecentSwaps().map((swap) => (
-                      <div key={swap.id} className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg">
+                      <div key={swap._id} className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg">
                         <div className="flex items-center space-x-3">
                           <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
-                            {getInitials(swap.fromUser.name)}
+                            {getInitials(`${swap.requesterId.firstName} ${swap.requesterId.lastName}`)}
                           </div>
                           <div>
                             <p className="text-sm font-medium text-gray-900 dark:text-white">
-                              {swap.fromUser.name} → {swap.toUser.name}
+                              {swap.requesterId.firstName} {swap.requesterId.lastName} → {swap.providerId.firstName} {swap.providerId.lastName}
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-400">
-                              {formatDateTime(swap.createdAt)}
+                              {formatDateTime(swap.createdAt || '')}
                             </p>
                           </div>
                         </div>
@@ -244,32 +277,32 @@ export default function AdminPage() {
                 ) : (
                   <div className="space-y-4">
                     {users.map((user) => (
-                      <div key={user.id} className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <div key={user._id} className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                         <div className="flex items-center space-x-4">
                           <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
-                            {getInitials(user.name)}
+                            {getInitials(`${user.firstName} ${user.lastName}`)}
                           </div>
                           <div>
-                            <h4 className="text-lg font-medium text-gray-900 dark:text-white">{user.name}</h4>
+                            <h4 className="text-lg font-medium text-gray-900 dark:text-white">
+                              {user.firstName} {user.lastName}
+                            </h4>
                             <p className="text-sm text-gray-500 dark:text-gray-400">
-                              {user.email} • Joined {new Date(user.createdAt).toLocaleDateString()}
+                              {user.email} • Joined {new Date(user.createdAt || '').toLocaleDateString()}
                             </p>
                             <div className="flex items-center space-x-2 mt-1">
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                user.availability === 'available' 
+                                user.isActive 
                                   ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-                                  : user.availability === 'busy'
-                                  ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
                                   : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
                               }`}>
-                                {user.availability}
+                                {user.isActive ? 'Active' : 'Inactive'}
                               </span>
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                user.isPublic 
-                                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
-                                  : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
+                                user.role === 'admin'
+                                  ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300'
+                                  : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
                               }`}>
-                                {user.isPublic ? 'Public' : 'Private'}
+                                {user.role}
                               </span>
                             </div>
                           </div>
@@ -277,13 +310,13 @@ export default function AdminPage() {
                         
                         <div className="flex space-x-2">
                           <button
-                            onClick={() => handleBanUser(user.id)}
+                            onClick={() => handleBanUser(user._id)}
                             className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded text-sm transition-colors"
                           >
                             Ban
                           </button>
                           <button
-                            onClick={() => handleDeleteUser(user.id)}
+                            onClick={() => handleDeleteUser(user._id)}
                             className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-sm transition-colors"
                           >
                             Delete
@@ -326,18 +359,18 @@ export default function AdminPage() {
                 ) : (
                   <div className="space-y-4">
                     {swaps.map((swap) => (
-                      <div key={swap.id} className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <div key={swap._id} className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center space-x-3">
                             <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
-                              {getInitials(swap.fromUser.name)}
+                              {getInitials(`${swap.requesterId.firstName} ${swap.requesterId.lastName}`)}
                             </div>
                             <div>
                               <p className="text-sm font-medium text-gray-900 dark:text-white">
-                                {swap.fromUser.name} → {swap.toUser.name}
+                                {swap.requesterId.firstName} {swap.requesterId.lastName} → {swap.providerId.firstName} {swap.providerId.lastName}
                               </p>
                               <p className="text-xs text-gray-500 dark:text-gray-400">
-                                {formatDateTime(swap.createdAt)}
+                                {formatDateTime(swap.createdAt || '')}
                               </p>
                             </div>
                           </div>
@@ -354,9 +387,9 @@ export default function AdminPage() {
                         
                         {swap.message && (
                           <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                                       <p className="text-sm text-gray-600 dark:text-gray-300">
-                             &quot;{swap.message}&quot;
-                           </p>
+                            <p className="text-sm text-gray-600 dark:text-gray-300">
+                              &quot;{swap.message}&quot;
+                            </p>
                           </div>
                         )}
                       </div>

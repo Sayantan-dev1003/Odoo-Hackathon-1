@@ -1,4 +1,11 @@
-import { IsString, IsNumber, IsOptional, IsArray, Min, Max } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsOptional,
+  IsArray,
+  Min,
+  Max,
+} from 'class-validator';
 
 export class CreateRatingDto {
   @IsString()
@@ -20,4 +27,4 @@ export class CreateRatingDto {
   @IsArray()
   @IsString({ each: true })
   tags?: string[];
-} 
+}

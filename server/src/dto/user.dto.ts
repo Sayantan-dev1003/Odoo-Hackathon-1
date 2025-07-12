@@ -1,4 +1,11 @@
-import { IsEmail, IsString, IsOptional, IsArray, IsEnum, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  IsOptional,
+  IsArray,
+  MinLength,
+  IsBoolean,
+} from 'class-validator';
 
 export class CreateUserDto {
   @IsEmail()
@@ -69,6 +76,10 @@ export class UpdateUserDto {
   @IsArray()
   @IsString({ each: true })
   availability?: string[];
+
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
 }
 
 export class LoginDto {
@@ -77,4 +88,4 @@ export class LoginDto {
 
   @IsString()
   password: string;
-} 
+}

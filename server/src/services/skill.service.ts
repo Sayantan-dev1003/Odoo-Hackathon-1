@@ -27,7 +27,9 @@ export class SkillService {
   }
 
   async findByName(name: string): Promise<Skill> {
-    return this.skillModel.findOne({ name: { $regex: name, $options: 'i' } }).exec();
+    return this.skillModel
+      .findOne({ name: { $regex: name, $options: 'i' } })
+      .exec();
   }
 
   async update(id: string, skillData: Partial<Skill>): Promise<Skill> {
@@ -41,7 +43,9 @@ export class SkillService {
   }
 
   async remove(id: string): Promise<void> {
-    const result = await this.skillModel.findByIdAndUpdate(id, { isActive: false }).exec();
+    const result = await this.skillModel
+      .findByIdAndUpdate(id, { isActive: false })
+      .exec();
     if (!result) {
       throw new NotFoundException('Skill not found');
     }
@@ -54,4 +58,4 @@ export class SkillService {
       .limit(10)
       .exec();
   }
-} 
+}

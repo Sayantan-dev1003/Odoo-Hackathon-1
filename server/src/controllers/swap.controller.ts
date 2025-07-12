@@ -70,4 +70,4 @@ export class SwapController {
     const swap = await this.swapService.update(id, updateSwapDto);
     return { message: 'Swap updated successfully', swap };
   }
-} 
+}

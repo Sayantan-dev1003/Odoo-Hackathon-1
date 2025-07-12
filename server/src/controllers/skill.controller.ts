@@ -14,7 +14,14 @@ export class SkillController {
   constructor(private readonly skillService: SkillService) {}
 
   @Post()
-  async create(@Body() skillData: any) {
+  async create(
+    @Body()
+    skillData: {
+      name: string;
+      category?: string;
+      description?: string;
+    },
+  ) {
     const skill = await this.skillService.create(skillData);
     return { message: 'Skill created successfully', skill };
   }
@@ -38,7 +45,11 @@ export class SkillController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() skillData: any) {
+  async update(
+    @Param('id') id: string,
+    @Body()
+    skillData: { name?: string; category?: string; description?: string },
+  ) {
     const skill = await this.skillService.update(id, skillData);
     return { message: 'Skill updated successfully', skill };
   }

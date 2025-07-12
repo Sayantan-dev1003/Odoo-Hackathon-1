@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
@@ -38,7 +42,7 @@ export class UserService {
     return user;
   }
 
-  async findByEmail(email: string): Promise<User> {
+  async findByEmail(email: string): Promise<UserDocument | null> {
     return this.userModel.findOne({ email }).exec();
   }
 
@@ -60,7 +64,7 @@ export class UserService {
     }
   }
 
-  async login(loginDto: LoginDto): Promise<{ user: User; token: string }> {
+  async login(loginDto: LoginDto): Promise<{ user: any; token: string }> {
     const user = await this.findByEmail(loginDto.email);
     if (!user) {
       throw new NotFoundException('Invalid credentials');
@@ -111,4 +115,4 @@ export class UserService {
       .limit(10)
       .exec();
   }
-} 
+}

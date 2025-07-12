@@ -55,6 +55,20 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  async getProfile(@Request() req) {
+    const user = await this.userService.findById(req.user.userId);
+    return { user };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('profile')
+  async updateProfile(@Request() req, @Body() updateUserDto: UpdateUserDto) {
+    const user = await this.userService.update(req.user.userId, updateUserDto);
+    return { message: 'Profile updated successfully', user };
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     const user = await this.userService.update(id, updateUserDto);
@@ -67,4 +81,4 @@ export class UserController {
     await this.userService.remove(id);
     return { message: 'User deleted successfully' };
   }
-} 
+}

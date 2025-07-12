@@ -8,7 +8,7 @@ export enum SwapStatus {
   ACCEPTED = 'accepted',
   REJECTED = 'rejected',
   COMPLETED = 'completed',
-  CANCELLED = 'cancelled'
+  CANCELLED = 'cancelled',
 }
 
 @Schema({ timestamps: true })
@@ -44,4 +44,4 @@ export class Swap {
   providerRating: Types.ObjectId;
 }
 
-export const SwapSchema = SchemaFactory.createForClass(Swap); 
+export const SwapSchema = SchemaFactory.createForClass(Swap);

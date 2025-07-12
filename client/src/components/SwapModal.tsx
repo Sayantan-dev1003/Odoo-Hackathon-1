@@ -1,14 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-
-interface User {
-  id: string;
-  name: string;
-  avatar?: string;
-  skillsOffered: string[];
-  skillsWanted: string[];
-}
+import { User } from '@/utils/api';
 
 interface SwapModalProps {
   isOpen: boolean;
@@ -27,7 +20,7 @@ const SwapModal = ({ isOpen, onClose, user, onConfirm }: SwapModalProps) => {
 
     setIsSubmitting(true);
     try {
-      await onConfirm(user.id, message);
+      await onConfirm(user._id, message);
       setMessage('');
       onClose();
     } catch (error) {
@@ -46,6 +39,8 @@ const SwapModal = ({ isOpen, onClose, user, onConfirm }: SwapModalProps) => {
   };
 
   if (!isOpen || !user) return null;
+
+  const fullName = `${user.firstName} ${user.lastName}`;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -68,20 +63,12 @@ const SwapModal = ({ isOpen, onClose, user, onConfirm }: SwapModalProps) => {
         {/* User Info */}
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center space-x-4 mb-4">
-            {user.avatar ? (
-              <img
-                src={user.avatar}
-                alt={user.name}
-                className="w-16 h-16 rounded-full object-cover"
-              />
-            ) : (
-              <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-lg">
-                {getInitials(user.name)}
-              </div>
-            )}
+            <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-lg">
+              {getInitials(fullName)}
+            </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                {user.name}
+                {fullName}
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Skill Exchange Partner
@@ -96,7 +83,7 @@ const SwapModal = ({ isOpen, onClose, user, onConfirm }: SwapModalProps) => {
                 They Offer:
               </h4>
               <div className="flex flex-wrap gap-2">
-                {user.skillsOffered.map((skill, index) => (
+                {user.offeredSkills.map((skill, index) => (
                   <span
                     key={index}
                     className="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 rounded-full text-xs font-medium"
@@ -111,7 +98,7 @@ const SwapModal = ({ isOpen, onClose, user, onConfirm }: SwapModalProps) => {
                 They Want:
               </h4>
               <div className="flex flex-wrap gap-2">
-                {user.skillsWanted.map((skill, index) => (
+                {user.wantedSkills.map((skill, index) => (
                   <span
                     key={index}
                     className="px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 rounded-full text-xs font-medium"

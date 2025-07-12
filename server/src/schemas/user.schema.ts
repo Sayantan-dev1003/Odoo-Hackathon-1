@@ -44,8 +44,8 @@ export class User {
   @Prop({ default: true })
   isActive: boolean;
 
-  @Prop({ type: Types.ObjectId, ref: 'Swap' })
+  @Prop({ type: [Types.ObjectId], ref: 'Swap', default: [] })
   activeSwaps: Types.ObjectId[];
 }
 
-export const UserSchema = SchemaFactory.createForClass(User); 
+export const UserSchema = SchemaFactory.createForClass(User);

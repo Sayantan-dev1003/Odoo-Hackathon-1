@@ -1,18 +1,20 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { swapApi, SwapRequest, formatDateTime } from '@/utils/api';
+import { apiService, Swap, formatDateTime } from '@/utils/api';
 import RatingStars from '@/components/RatingStars';
 import toast from 'react-hot-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function SwapsPage() {
-  const [swapRequests, setSwapRequests] = useState<SwapRequest[]>([]);
+  const [swapRequests, setSwapRequests] = useState<Swap[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'pending' | 'accepted' | 'completed'>('pending');
   const [ratingModalOpen, setRatingModalOpen] = useState(false);
-  const [selectedSwap, setSelectedSwap] = useState<SwapRequest | null>(null);
+  const [selectedSwap, setSelectedSwap] = useState<Swap | null>(null);
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState('');
+  const { user: currentUser } = useAuth();
 
   useEffect(() => {
     fetchSwapRequests();
@@ -21,8 +23,8 @@ export default function SwapsPage() {
   const fetchSwapRequests = async () => {
     try {
       setIsLoading(true);
-      const requests = await swapApi.getSwapRequests();
-      setSwapRequests(requests);
+      const response = await apiService.getMySwaps();
+      setSwapRequests(response.swaps);
     } catch (error) {
       console.error('Error fetching swap requests:', error);
       toast.error('Failed to load swap requests');
@@ -33,7 +35,11 @@ export default function SwapsPage() {
 
   const handleSwapAction = async (swapId: string, action: 'accepted' | 'rejected') => {
     try {
-      await swapApi.updateSwapRequest(swapId, { status: action });
+      if (action === 'accepted') {
+        await apiService.acceptSwap(swapId);
+      } else {
+        await apiService.rejectSwap(swapId);
+      }
       toast.success(`Swap ${action} successfully!`);
       fetchSwapRequests();
     } catch (error) {
@@ -44,7 +50,7 @@ export default function SwapsPage() {
 
   const handleCompleteSwap = async (swapId: string) => {
     try {
-      await swapApi.updateSwapRequest(swapId, { status: 'completed' });
+      await apiService.completeSwap(swapId);
       toast.success('Swap marked as completed!');
       fetchSwapRequests();
     } catch (error) {
@@ -53,20 +59,27 @@ export default function SwapsPage() {
     }
   };
 
-  const handleRateSwap = (swap: SwapRequest) => {
+  const handleRateSwap = (swap: Swap) => {
     setSelectedSwap(swap);
     setRatingModalOpen(true);
   };
 
   const submitRating = async () => {
-    if (!selectedSwap) return;
+    if (!selectedSwap || !currentUser) return;
 
     try {
-      await swapApi.updateSwapRequest(selectedSwap.id, {
-        status: 'completed',
+      const ratedUserId = selectedSwap.requesterId._id === currentUser._id 
+        ? selectedSwap.providerId._id 
+        : selectedSwap.requesterId._id;
+
+      await apiService.createRating({
+        swapId: selectedSwap._id,
+        ratedUserId,
         rating,
-        feedback
+        comment: feedback,
+        tags: []
       });
+      
       toast.success('Rating submitted successfully!');
       setRatingModalOpen(false);
       setSelectedSwap(null);
@@ -88,12 +101,12 @@ export default function SwapsPage() {
     });
   };
 
-  const getSwapPartner = (swap: SwapRequest, currentUserId: string) => {
-    return swap.fromUserId === currentUserId ? swap.toUser : swap.fromUser;
+  const getSwapPartner = (swap: Swap, currentUserId: string) => {
+    return swap.requesterId._id === currentUserId ? swap.providerId : swap.requesterId;
   };
 
-  const isSwapSentByCurrentUser = (swap: SwapRequest, currentUserId: string) => {
-    return swap.fromUserId === currentUserId;
+  const isSwapSentByCurrentUser = (swap: Swap, currentUserId: string) => {
+    return swap.requesterId._id === currentUserId;
   };
 
   const getInitials = (name: string) => {
@@ -180,22 +193,22 @@ export default function SwapsPage() {
             ) : (
               <div className="space-y-4">
                 {filteredSwaps.map((swap) => {
-                  const partner = getSwapPartner(swap, 'current-user-id'); // This would come from auth context
-                  const isSentByMe = isSwapSentByCurrentUser(swap, 'current-user-id');
+                  const partner = currentUser ? getSwapPartner(swap, currentUser._id) : swap.providerId;
+                  const isSentByMe = currentUser ? isSwapSentByCurrentUser(swap, currentUser._id) : false;
                   
                   return (
-                    <div key={swap.id} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 border border-gray-200 dark:border-gray-600">
+                    <div key={swap._id} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 border border-gray-200 dark:border-gray-600">
                       <div className="flex items-start justify-between">
                         <div className="flex items-center space-x-4">
                           <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
-                            {getInitials(partner.name)}
+                            {getInitials(`${partner.firstName} ${partner.lastName}`)}
                           </div>
                           <div>
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                              {partner.name}
+                              {partner.firstName} {partner.lastName}
                             </h3>
                             <p className="text-sm text-gray-500 dark:text-gray-400">
-                              {isSentByMe ? 'Request sent to' : 'Request from'} • {formatDateTime(swap.createdAt)}
+                              {isSentByMe ? 'Request sent to' : 'Request from'} • {formatDateTime(swap.createdAt || '')}
                             </p>
                           </div>
                         </div>
@@ -229,7 +242,7 @@ export default function SwapsPage() {
                             They offer:
                           </h4>
                           <div className="flex flex-wrap gap-1">
-                            {partner.skillsOffered.slice(0, 3).map((skill, index) => (
+                            {partner.offeredSkills.slice(0, 3).map((skill, index) => (
                               <span key={index} className="px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 rounded-full text-xs">
                                 {skill}
                               </span>
@@ -241,7 +254,7 @@ export default function SwapsPage() {
                             They want:
                           </h4>
                           <div className="flex flex-wrap gap-1">
-                            {partner.skillsWanted.slice(0, 3).map((skill, index) => (
+                            {partner.wantedSkills.slice(0, 3).map((skill, index) => (
                               <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 rounded-full text-xs">
                                 {skill}
                               </span>
@@ -255,13 +268,13 @@ export default function SwapsPage() {
                         {swap.status === 'pending' && !isSentByMe && (
                           <>
                             <button
-                              onClick={() => handleSwapAction(swap.id, 'rejected')}
+                              onClick={() => handleSwapAction(swap._id, 'rejected')}
                               className="px-4 py-2 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
                             >
                               Decline
                             </button>
                             <button
-                              onClick={() => handleSwapAction(swap.id, 'accepted')}
+                              onClick={() => handleSwapAction(swap._id, 'accepted')}
                               className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
                             >
                               Accept
@@ -271,27 +284,20 @@ export default function SwapsPage() {
                         
                         {swap.status === 'accepted' && (
                           <button
-                            onClick={() => handleCompleteSwap(swap.id)}
+                            onClick={() => handleCompleteSwap(swap._id)}
                             className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
                           >
                             Mark Complete
                           </button>
                         )}
                         
-                        {swap.status === 'completed' && !swap.rating && (
+                        {swap.status === 'completed' && (
                           <button
                             onClick={() => handleRateSwap(swap)}
                             className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors"
                           >
                             Rate Experience
                           </button>
-                        )}
-                        
-                        {swap.status === 'completed' && swap.rating && (
-                          <div className="flex items-center space-x-2">
-                            <span className="text-sm text-gray-500 dark:text-gray-400">Your rating:</span>
-                            <RatingStars rating={swap.rating} readOnly size="sm" showLabel={false} />
-                          </div>
                         )}
                       </div>
                     </div>
@@ -311,7 +317,7 @@ export default function SwapsPage() {
               Rate Your Experience
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
-              How was your skill exchange with {getSwapPartner(selectedSwap, 'current-user-id').name}?
+              How was your skill exchange with {currentUser ? getSwapPartner(selectedSwap, currentUser._id).firstName : 'your partner'}?
             </p>
             
             <div className="mb-6">

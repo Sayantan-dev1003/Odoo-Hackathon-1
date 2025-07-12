@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Rating, RatingDocument } from '../schemas/rating.schema';
@@ -10,7 +10,10 @@ export class RatingService {
     @InjectModel(Rating.name) private ratingModel: Model<RatingDocument>,
   ) {}
 
-  async create(createRatingDto: CreateRatingDto, raterId: string): Promise<Rating> {
+  async create(
+    createRatingDto: CreateRatingDto,
+    raterId: string,
+  ): Promise<Rating> {
     const createdRating = new this.ratingModel({
       ...createRatingDto,
       raterId: new Types.ObjectId(raterId),
@@ -34,9 +37,13 @@ export class RatingService {
       .exec();
   }
 
-  async getAverageRating(userId: string): Promise<{ average: number; total: number }> {
-    const ratings = await this.ratingModel.find({ ratedUserId: new Types.ObjectId(userId) });
-    
+  async getAverageRating(
+    userId: string,
+  ): Promise<{ average: number; total: number }> {
+    const ratings = await this.ratingModel.find({
+      ratedUserId: new Types.ObjectId(userId),
+    });
+
     if (ratings.length === 0) {
       return { average: 0, total: 0 };
     }
@@ -46,4 +53,4 @@ export class RatingService {
 
     return { average: Math.round(average * 100) / 100, total: ratings.length };
   }
-} 
+}

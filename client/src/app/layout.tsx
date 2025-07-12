@@ -1,14 +1,14 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import Navbar from "@/components/Navbar";
-import { Toaster } from 'react-hot-toast';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import { AuthProvider } from '@/contexts/AuthContext';
+import Navbar from '@/components/Navbar';
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "SkillLink - Peer-to-Peer Skill Exchange Platform",
-  description: "Connect with others to exchange skills and learn new ones through peer-to-peer teaching.",
+  title: 'SkillLink - Peer-to-Peer Skill Exchange',
+  description: 'Exchange skills with others in your community',
 };
 
 export default function RootLayout({
@@ -17,22 +17,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="scroll-smooth">
-      <body className={`${inter.className} bg-gray-50 dark:bg-gray-900 transition-colors duration-300`}>
-        <Navbar />
-        <main className="min-h-screen">
-          {children}
-        </main>
-        <Toaster 
-          position="top-right"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: '#363636',
-              color: '#fff',
-            },
-          }}
-        />
+    <html lang="en">
+      <body className={inter.className}>
+        <AuthProvider>
+          <Navbar />
+          <main className="min-h-screen bg-gray-50">
+            {children}
+          </main>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Swap, SwapDocument, SwapStatus } from '../schemas/swap.schema';
@@ -6,11 +10,12 @@ import { CreateSwapDto, UpdateSwapDto } from '../dto/swap.dto';
 
 @Injectable()
 export class SwapService {
-  constructor(
-    @InjectModel(Swap.name) private swapModel: Model<SwapDocument>,
-  ) {}
+  constructor(@InjectModel(Swap.name) private swapModel: Model<SwapDocument>) {}
 
-  async create(createSwapDto: CreateSwapDto, requesterId: string): Promise<Swap> {
+  async create(
+    createSwapDto: CreateSwapDto,
+    requesterId: string,
+  ): Promise<Swap> {
     const createdSwap = new this.swapModel({
       ...createSwapDto,
       requesterId: new Types.ObjectId(requesterId),
@@ -20,7 +25,10 @@ export class SwapService {
   }
 
   async findAll(): Promise<Swap[]> {
-    return this.swapModel.find().populate('requesterId providerId', '-password').exec();
+    return this.swapModel
+      .find()
+      .populate('requesterId providerId', '-password')
+      .exec();
   }
 
   async findById(id: string): Promise<Swap> {
@@ -39,8 +47,8 @@ export class SwapService {
       .find({
         $or: [
           { requesterId: new Types.ObjectId(userId) },
-          { providerId: new Types.ObjectId(userId) }
-        ]
+          { providerId: new Types.ObjectId(userId) },
+        ],
       })
       .populate('requesterId providerId', '-password')
       .exec();
@@ -59,11 +67,11 @@ export class SwapService {
 
   async acceptSwap(id: string, userId: string): Promise<Swap> {
     const swap = await this.findById(id);
-    
+
     if (swap.providerId.toString() !== userId) {
       throw new BadRequestException('Only the provider can accept this swap');
     }
-    
+
     if (swap.status !== SwapStatus.PENDING) {
       throw new BadRequestException('Swap is not in pending status');
     }
@@ -73,11 +81,11 @@ export class SwapService {
 
   async rejectSwap(id: string, userId: string): Promise<Swap> {
     const swap = await this.findById(id);
-    
+
     if (swap.providerId.toString() !== userId) {
       throw new BadRequestException('Only the provider can reject this swap');
     }
-    
+
     if (swap.status !== SwapStatus.PENDING) {
       throw new BadRequestException('Swap is not in pending status');
     }
@@ -87,32 +95,49 @@ export class SwapService {
 
   async completeSwap(id: string, userId: string): Promise<Swap> {
     const swap = await this.findById(id);
-    
-    if (![swap.requesterId.toString(), swap.providerId.toString()].includes(userId)) {
-      throw new BadRequestException('Only swap participants can complete this swap');
+
+    if (
+      ![swap.requesterId.toString(), swap.providerId.toString()].includes(
+        userId,
+      )
+    ) {
+      throw new BadRequestException(
+        'Only swap participants can complete this swap',
+      );
     }
-    
+
     if (swap.status !== SwapStatus.ACCEPTED) {
       throw new BadRequestException('Swap must be accepted before completion');
     }
 
-    return this.update(id, { 
+    return this.update(id, {
       status: SwapStatus.COMPLETED,
-      completedDate: new Date()
+      completedDate: new Date(),
     });
   }
 
   async cancelSwap(id: string, userId: string): Promise<Swap> {
     const swap = await this.findById(id);
-    
-    if (![swap.requesterId.toString(), swap.providerId.toString()].includes(userId)) {
-      throw new BadRequestException('Only swap participants can cancel this swap');
+
+    if (
+      ![swap.requesterId.toString(), swap.providerId.toString()].includes(
+        userId,
+      )
+    ) {
+      throw new BadRequestException(
+        'Only swap participants can cancel this swap',
+      );
     }
-    
-    if (swap.status !== SwapStatus.PENDING && swap.status !== SwapStatus.ACCEPTED) {
-      throw new BadRequestException('Swap cannot be cancelled in current status');
+
+    if (
+      swap.status !== SwapStatus.PENDING &&
+      swap.status !== SwapStatus.ACCEPTED
+    ) {
+      throw new BadRequestException(
+        'Swap cannot be cancelled in current status',
+      );
     }
 
     return this.update(id, { status: SwapStatus.CANCELLED });
   }
-} 
+}

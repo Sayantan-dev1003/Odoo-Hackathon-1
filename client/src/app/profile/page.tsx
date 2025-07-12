@@ -3,22 +3,29 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import UserForm from '@/components/UserForm';
-import { userApi, CreateUserData, User } from '@/utils/api';
+import { apiService, User } from '@/utils/api';
+import { CreateUserData } from '@/types';
 import toast from 'react-hot-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const router = useRouter();
+  const { user: authUser } = useAuth();
 
   useEffect(() => {
-    fetchCurrentUser();
-  }, []);
+    if (authUser) {
+      setCurrentUser(authUser);
+    } else {
+      fetchCurrentUser();
+    }
+  }, [authUser]);
 
   const fetchCurrentUser = async () => {
     try {
-      const user = await userApi.getCurrentUser();
+      const user = await apiService.getCurrentUser();
       setCurrentUser(user);
     } catch {
       console.log('No current user found, creating new profile');
@@ -31,15 +38,15 @@ export default function ProfilePage() {
     try {
       if (currentUser) {
         // Update existing user
-        await userApi.updateUser({ ...formData, id: currentUser.id });
+        const response = await apiService.updateProfile(formData);
         toast.success('Profile updated successfully!');
-        setCurrentUser({ ...currentUser, ...formData, availability: formData.availability as 'available' | 'busy' | 'offline' });
+        setCurrentUser(response.user);
         setIsEditing(false);
       } else {
         // Create new user
-        const newUser = await userApi.createUser(formData);
+        const response = await apiService.register(formData);
         toast.success('Profile created successfully!');
-        setCurrentUser(newUser);
+        setCurrentUser(response.user);
         setIsEditing(false);
         router.push('/browse');
       }
@@ -75,20 +82,20 @@ export default function ProfilePage() {
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center space-x-4">
                   <div className="w-20 h-20 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-2xl">
-                    {currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                    {`${currentUser.firstName} ${currentUser.lastName}`.split(' ').map(n => n[0]).join('').toUpperCase()}
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {currentUser.name}
+                      {currentUser.firstName} {currentUser.lastName}
                     </h2>
                     <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                      currentUser.availability === 'available' 
+                      currentUser.availability.includes('Weekends') 
                         ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-                        : currentUser.availability === 'busy'
+                        : currentUser.availability.includes('Evenings')
                         ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
                         : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
                     }`}>
-                      {currentUser.availability}
+                      {currentUser.availability.join(', ')}
                     </span>
                   </div>
                 </div>
@@ -113,7 +120,7 @@ export default function ProfilePage() {
                     Skills I Offer
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    {currentUser.skillsOffered.map((skill, index) => (
+                    {currentUser.offeredSkills.map((skill, index) => (
                       <span
                         key={index}
                         className="px-3 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 rounded-full text-sm font-medium"
@@ -129,7 +136,7 @@ export default function ProfilePage() {
                     Skills I Want to Learn
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    {currentUser.skillsWanted.map((skill, index) => (
+                    {currentUser.wantedSkills.map((skill, index) => (
                       <span
                         key={index}
                         className="px-3 py-1 bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300 rounded-full text-sm font-medium"
@@ -144,15 +151,15 @@ export default function ProfilePage() {
               <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">Profile Visibility</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">Profile Status</span>
                     <div className="text-lg font-medium text-gray-900 dark:text-white">
-                      {currentUser.isPublic ? 'Public' : 'Private'}
+                      {currentUser.isActive ? 'Active' : 'Inactive'}
                     </div>
                   </div>
                   <div className="text-right">
                     <span className="text-sm text-gray-500 dark:text-gray-400">Member Since</span>
                     <div className="text-lg font-medium text-gray-900 dark:text-white">
-                      {new Date(currentUser.createdAt).toLocaleDateString()}
+                      {new Date(currentUser.createdAt || '').toLocaleDateString()}
                     </div>
                   </div>
                 </div>
@@ -185,4 +192,4 @@ export default function ProfilePage() {
       </div>
     </div>
   );
-} 
+}

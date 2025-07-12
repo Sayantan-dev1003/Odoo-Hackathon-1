@@ -18,7 +18,10 @@ export class RatingController {
 
   @Post()
   async create(@Body() createRatingDto: CreateRatingDto, @Request() req) {
-    const rating = await this.ratingService.create(createRatingDto, req.user.userId);
+    const rating = await this.ratingService.create(
+      createRatingDto,
+      req.user.userId,
+    );
     return { message: 'Rating created successfully', rating };
   }
 
@@ -39,4 +42,4 @@ export class RatingController {
     const average = await this.ratingService.getAverageRating(userId);
     return { average };
   }
-} 
+}

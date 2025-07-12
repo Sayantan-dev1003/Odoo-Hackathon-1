@@ -4,12 +4,16 @@ import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import SkillCard from '@/components/SkillCard';
 import SwapModal from '@/components/SwapModal';
-import { userApi, swapApi, User, calculateMatchPercentage } from '@/utils/api';
+import { apiService, User, calculateMatchPercentage } from '@/utils/api';
 import toast from 'react-hot-toast';
+
+interface UserWithMatch extends User {
+  matchPercentage?: number;
+}
 
 function BrowseContent() {
   const [users, setUsers] = useState<User[]>([]);
-  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<UserWithMatch[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAvailability, setSelectedAvailability] = useState('all');
@@ -32,8 +36,8 @@ function BrowseContent() {
   const fetchUsers = async () => {
     try {
       setIsLoading(true);
-      const usersData = await userApi.getUsers();
-      setUsers(usersData.filter(user => user.isPublic));
+      const response = await apiService.getAllUsers();
+      setUsers(response.users.filter(user => user.isActive));
     } catch (err) {
       console.error('Error fetching users:', err);
       toast.error('Failed to load users');
@@ -44,7 +48,7 @@ function BrowseContent() {
 
   const fetchCurrentUser = async () => {
     try {
-      const user = await userApi.getCurrentUser();
+      const user = await apiService.getCurrentUser();
       setCurrentUser(user);
     } catch {
       console.log('No current user found');
@@ -52,29 +56,29 @@ function BrowseContent() {
   };
 
   const filterUsers = useCallback(() => {
-    let filtered = users;
+    let filtered: UserWithMatch[] = users;
 
     // Filter out current user
     if (currentUser) {
-      filtered = filtered.filter(user => user.id !== currentUser.id);
+      filtered = filtered.filter(user => user._id !== currentUser._id);
     }
 
     // Filter by search term (skills)
     if (searchTerm) {
       filtered = filtered.filter(user => 
-        user.skillsOffered.some(skill => 
+        user.offeredSkills.some(skill => 
           skill.toLowerCase().includes(searchTerm.toLowerCase())
         ) ||
-        user.skillsWanted.some(skill => 
+        user.wantedSkills.some(skill => 
           skill.toLowerCase().includes(searchTerm.toLowerCase())
         ) ||
-        user.name.toLowerCase().includes(searchTerm.toLowerCase())
+        `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     // Filter by availability
     if (selectedAvailability !== 'all') {
-      filtered = filtered.filter(user => user.availability === selectedAvailability);
+      filtered = filtered.filter(user => user.availability.includes(selectedAvailability));
     }
 
     // Calculate match percentages if current user exists
@@ -96,7 +100,7 @@ function BrowseContent() {
   }, [filterUsers]);
 
   const handleRequestSwap = (userId: string) => {
-    const user = users.find(u => u.id === userId);
+    const user = users.find(u => u._id === userId);
     if (user) {
       setSelectedUser(user);
       setIsModalOpen(true);
@@ -105,8 +109,10 @@ function BrowseContent() {
 
   const handleSwapConfirm = async (userId: string, message: string) => {
     try {
-      await swapApi.createSwapRequest({
-        toUserId: userId,
+      await apiService.createSwap({
+        providerId: userId,
+        requestedSkill: 'Skill Request',
+        offeredSkill: 'Skill Offer',
         message
       });
       toast.success('Swap request sent successfully!');
@@ -165,9 +171,9 @@ function BrowseContent() {
                 className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
               >
                 <option value="all">All Availability</option>
-                <option value="available">Available</option>
-                <option value="busy">Busy</option>
-                <option value="offline">Offline</option>
+                <option value="Weekends">Weekends</option>
+                <option value="Evenings">Evenings</option>
+                <option value="Weekdays">Weekdays</option>
               </select>
 
               <button
@@ -223,7 +229,7 @@ function BrowseContent() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredUsers.map((user) => (
               <SkillCard
-                key={user.id}
+                key={user._id}
                 user={user}
                 onRequestSwap={handleRequestSwap}
               />

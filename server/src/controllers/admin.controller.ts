@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Body, Patch, Param, Delete } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { SwapService } from '../services/swap.service';
 import { SkillService } from '../services/skill.service';
@@ -22,7 +13,6 @@ export class AdminController {
 
   @Get('dashboard')
   async getDashboardStats() {
-    // This would typically include more complex aggregations
     const totalUsers = await this.userService.findAll();
     const totalSwaps = await this.swapService.findAll();
     const totalSkills = await this.skillService.findAll();
@@ -32,8 +22,9 @@ export class AdminController {
         totalUsers: totalUsers.length,
         totalSwaps: totalSwaps.length,
         totalSkills: totalSkills.length,
-        activeSwaps: totalSwaps.filter(swap => swap.status === 'accepted').length,
-      }
+        activeSwaps: totalSwaps.filter((swap) => swap.status === 'accepted')
+          .length,
+      },
     };
   }
 
@@ -50,7 +41,10 @@ export class AdminController {
   }
 
   @Patch('users/:id/status')
-  async updateUserStatus(@Param('id') id: string, @Body() body: { isActive: boolean }) {
+  async updateUserStatus(
+    @Param('id') id: string,
+    @Body() body: { isActive: boolean },
+  ) {
     const user = await this.userService.update(id, { isActive: body.isActive });
     return { message: 'User status updated successfully', user };
   }
@@ -60,4 +54,4 @@ export class AdminController {
     await this.userService.remove(id);
     return { message: 'User deleted successfully' };
   }
-} 
+}
