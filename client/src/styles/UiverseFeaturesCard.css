@@ -20,7 +20,7 @@
   border-radius: 22px;
   color: #ffffff;
   overflow: hidden;
-  background: #8b0cd0;
+  background: linear-gradient(135deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%);
   transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
@@ -32,7 +32,7 @@
   width: 90%;
   height: 90%;
   transform: translate(-50%);
-  background: #ced8ff;
+  background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 50%, #ede9fe 100%);
   z-index: -1;
   transform-origin: bottom;
 
@@ -48,7 +48,7 @@
   width: 80%;
   height: 80%;
   transform: translate(-50%);
-  background: #e7ecff;
+  background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 50%, #faf5ff 100%);
   z-index: -2;
   transform-origin: bottom;
   border-radius: inherit;
