@@ -56,7 +56,7 @@ export default function AdminPage() {
     }
   };
 
-  const handleBanUser = async (userId: string) => {
+  const handleBanUser = async () => {
     try {
       await apiService.updateProfile({ isActive: false });
       toast.success('User banned successfully');
@@ -67,7 +67,7 @@ export default function AdminPage() {
     }
   };
 
-  const handleDeleteUser = async (userId: string) => {
+  const handleDeleteUser = async () => {
     if (window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
       try {
         // Note: This would need a proper admin endpoint
@@ -312,13 +312,13 @@ export default function AdminPage() {
                         
                         <div className="flex space-x-2">
                           <button
-                            onClick={() => handleBanUser(user._id)}
+                            onClick={() => handleBanUser()}
                             className="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded text-sm transition-colors"
                           >
                             Ban
                           </button>
                           <button
-                            onClick={() => handleDeleteUser(user._id)}
+                            onClick={() => handleDeleteUser()}
                             className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-sm transition-colors"
                           >
                             Delete
