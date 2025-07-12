@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import toast from 'react-hot-toast';
+import Link from 'next/link';
 
 export default function AdminLoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -119,12 +120,12 @@ export default function AdminLoginPage() {
           </form>
 
           <div className="mt-6 text-center">
-            <a
+            <Link
               href="/"
               className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
             >
               ← Back to main site
-            </a>
+            </Link>
           </div>
         </div>
 

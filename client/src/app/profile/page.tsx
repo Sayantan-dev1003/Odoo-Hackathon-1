@@ -66,9 +66,9 @@ export default function ProfilePage() {
         setIsEditing(false);
         router.push('/browse');
       }
-    } catch (error: any) {
-      console.error('Error saving profile:', error);
-      toast.error(error.message || 'Failed to save profile. Please try again.');
+    } catch (error: unknown) {
+      console.error('Error updating profile:', error);
+      toast.error('Failed to update profile');
     } finally {
       setIsLoading(false);
     }

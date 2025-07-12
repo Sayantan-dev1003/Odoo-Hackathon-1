@@ -118,8 +118,8 @@ class ApiService {
       
       const errorMessage = error.message || `HTTP error! status: ${response.status}`;
       const customError = new Error(errorMessage);
-      (customError as any).response = error;
-      (customError as any).status = response.status;
+      (customError as Error & { response?: unknown; status?: number }).response = error;
+      (customError as Error & { response?: unknown; status?: number }).status = response.status;
       
       throw customError;
     }
