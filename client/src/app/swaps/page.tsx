@@ -192,34 +192,6 @@ export default function SwapsPage() {
             </div>
           </div>
 
-          {/* Debug Panel - Remove this after fixing */}
-          {process.env.NODE_ENV === 'development' && (
-            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4 mb-8">
-              <h3 className="text-sm font-semibold text-yellow-800 dark:text-yellow-200 mb-2">Debug Information</h3>
-              <div className="text-xs text-yellow-700 dark:text-yellow-300">
-                <p>Current User ID: {currentUser?._id}</p>
-                <p>Total Swaps: {swapRequests.length}</p>
-                <p>Pending Swaps: {swapRequests.filter(s => s.status === 'pending').length}</p>
-                <p>Active Tab: {activeTab}</p>
-                <p>Filtered Swaps: {filteredSwaps.length}</p>
-                {filteredSwaps.length > 0 && (
-                  <div className="mt-2">
-                    <p className="font-semibold">First Swap Details:</p>
-                    <pre className="text-xs bg-yellow-100 dark:bg-yellow-800 p-2 rounded mt-1">
-                      {JSON.stringify({
-                        id: filteredSwaps[0]._id,
-                        requesterId: filteredSwaps[0].requesterId._id,
-                        providerId: filteredSwaps[0].providerId._id,
-                        status: filteredSwaps[0].status,
-                        isSentByCurrentUser: currentUser ? isSwapSentByCurrentUser(filteredSwaps[0], currentUser._id) : false
-                      }, null, 2)}
-                    </pre>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
           {/* Tabs */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl mb-8 animate-fade-in-up" style={{ animationDelay: '600ms' }}>
             <div className="border-b border-gray-200 dark:border-gray-700">
@@ -419,21 +391,6 @@ export default function SwapsPage() {
 
                         {/* Actions */}
                         <div className="flex justify-end space-x-3">
-                          {/* Debug info for development */}
-                          {process.env.NODE_ENV === 'development' && (
-                            <div className="text-xs text-gray-500 mr-4 bg-gray-100 p-2 rounded">
-                              <p><strong>Debug Info:</strong></p>
-                              <p>Current User: {currentUser?._id}</p>
-                              <p>Requester: {swap.requesterId._id}</p>
-                              <p>Provider: {swap.providerId._id}</p>
-                              <p>Status: {swap.status}</p>
-                              <p>Sent by me: {isSentByMe ? 'Yes' : 'No'}</p>
-                              <p>Am I provider: {currentUser?._id === swap.providerId._id ? 'Yes' : 'No'}</p>
-                              <p>Show buttons: {(swap.status === 'pending' && !isSentByMe) ? 'Yes' : 'No'}</p>
-                              <p>Button condition: pending={swap.status === 'pending'} AND notSentByMe={!isSentByMe}</p>
-                            </div>
-                          )}
-                          
                           {/* Show accept/reject buttons if: 1) swap is pending AND 2) current user is the provider (recipient) */}
                           {swap.status === 'pending' && (
                             // Primary condition: not sent by current user (they are the recipient/provider)
