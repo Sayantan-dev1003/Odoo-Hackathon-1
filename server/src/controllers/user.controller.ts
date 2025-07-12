@@ -35,7 +35,7 @@ export class UserController {
     return { users };
   }
 
-  @Get('search')
+  @Post('search')
   async searchBySkills(@Body() body: { skills: string[] }) {
     const users = await this.userService.searchBySkills(body.skills);
     return { users };
@@ -48,17 +48,11 @@ export class UserController {
     return { users };
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    const user = await this.userService.findById(id);
-    return { user };
-  }
-
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   async getProfile(@Request() req) {
     const user = await this.userService.findById(req.user.userId);
-    return { user };
+    return user;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -66,6 +60,12 @@ export class UserController {
   async updateProfile(@Request() req, @Body() updateUserDto: UpdateUserDto) {
     const user = await this.userService.update(req.user.userId, updateUserDto);
     return { message: 'Profile updated successfully', user };
+  }
+
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    const user = await this.userService.findById(id);
+    return { user };
   }
 
   @UseGuards(JwtAuthGuard)

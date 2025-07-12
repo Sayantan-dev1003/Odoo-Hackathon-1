@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { apiService, User, Swap, formatDateTime } from '@/utils/api';
+import ProtectedRoute from '@/components/ProtectedRoute';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -107,7 +108,8 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <ProtectedRoute adminOnly={true}>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
@@ -402,5 +404,6 @@ export default function AdminPage() {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 } 

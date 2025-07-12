@@ -34,6 +34,22 @@ export default function ProfilePage() {
   };
 
   const handleSubmit = async (formData: CreateUserData) => {
+    // Basic validation
+    if (!formData.firstName.trim() || !formData.lastName.trim()) {
+      toast.error('First name and last name are required');
+      return;
+    }
+
+    if (!formData.email.trim()) {
+      toast.error('Email is required');
+      return;
+    }
+
+    if (!currentUser && !formData.password.trim()) {
+      toast.error('Password is required for new accounts');
+      return;
+    }
+
     setIsLoading(true);
     try {
       if (currentUser) {
@@ -50,9 +66,9 @@ export default function ProfilePage() {
         setIsEditing(false);
         router.push('/browse');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving profile:', error);
-      toast.error('Failed to save profile. Please try again.');
+      toast.error(error.message || 'Failed to save profile. Please try again.');
     } finally {
       setIsLoading(false);
     }
