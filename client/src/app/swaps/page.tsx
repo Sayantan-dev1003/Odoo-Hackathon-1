@@ -323,46 +323,34 @@ export default function SwapsPage() {
                           </div>
                         )}
 
-                        {/* Skills */}
-                        <div className="mb-6 grid md:grid-cols-2 gap-6">
-                          <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
-                            <h4 className="text-sm font-semibold text-green-800 dark:text-green-400 mb-3 flex items-center">
-                              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+                        {/* Swap Details */}
+                        <div className="mb-6">
+                          <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-6 rounded-xl border border-blue-200 dark:border-blue-700/50">
+                            <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                              <svg className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                               </svg>
-                              They offer:
+                              Skill Exchange Details
                             </h4>
-                            <div className="flex flex-wrap gap-2">
-                              {partner.offeredSkills.slice(0, 3).map((skill, index) => (
-                                <span key={index} className="px-3 py-1 bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200 rounded-full text-sm font-medium">
-                                  {skill}
+                            <div className="grid md:grid-cols-2 gap-6">
+                              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-emerald-200 dark:border-emerald-700/50">
+                                <h5 className="text-sm font-semibold text-emerald-700 dark:text-emerald-300 mb-2 flex items-center">
+                                  <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
+                                  {isSentByMe ? 'You want to learn' : 'They want to learn'}
+                                </h5>
+                                <span className="px-3 py-2 bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300 rounded-lg text-sm font-medium">
+                                  {swap.requestedSkill}
                                 </span>
-                              ))}
-                              {partner.offeredSkills.length > 3 && (
-                                <span className="px-3 py-1 bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200 rounded-full text-sm font-medium">
-                                  +{partner.offeredSkills.length - 3} more
+                              </div>
+                              <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-blue-200 dark:border-blue-700/50">
+                                <h5 className="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-2 flex items-center">
+                                  <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                                  {isSentByMe ? 'You offer to teach' : 'They offer to teach'}
+                                </h5>
+                                <span className="px-3 py-2 bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300 rounded-lg text-sm font-medium">
+                                  {swap.offeredSkill}
                                 </span>
-                              )}
-                            </div>
-                          </div>
-                          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-                            <h4 className="text-sm font-semibold text-blue-800 dark:text-blue-400 mb-3 flex items-center">
-                              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                              </svg>
-                              They want:
-                            </h4>
-                            <div className="flex flex-wrap gap-2">
-                              {partner.wantedSkills.slice(0, 3).map((skill, index) => (
-                                <span key={index} className="px-3 py-1 bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-200 rounded-full text-sm font-medium">
-                                  {skill}
-                                </span>
-                              ))}
-                              {partner.wantedSkills.length > 3 && (
-                                <span className="px-3 py-1 bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-200 rounded-full text-sm font-medium">
-                                  +{partner.wantedSkills.length - 3} more
-                                </span>
-                              )}
+                              </div>
                             </div>
                           </div>
                         </div>

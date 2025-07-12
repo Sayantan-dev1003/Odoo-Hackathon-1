@@ -119,12 +119,12 @@ function BrowseContent() {
     }
   };
 
-  const handleSwapConfirm = async (userId: string, message: string) => {
+  const handleSwapConfirm = async (userId: string, requestedSkill: string, offeredSkill: string, message: string) => {
     try {
       await apiService.createSwap({
         providerId: userId,
-        requestedSkill: 'Skill Request',
-        offeredSkill: 'Skill Offer',
+        requestedSkill,
+        offeredSkill,
         message
       });
       toast.success('Swap request sent successfully!');
@@ -376,6 +376,7 @@ function BrowseContent() {
           setSelectedUser(null);
         }}
         user={selectedUser}
+        currentUser={currentUser}
         onConfirm={handleSwapConfirm}
       />
     </div>
