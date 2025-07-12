@@ -1,9 +1,47 @@
+<<<<<<< HEAD
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
 /client/node_modules
 /server/node_modules
 /.pnp
+=======
+# General
+.DS_Store
+*.pem
+*.tsbuildinfo
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Dependency folders
+/client/node_modules/
+/server/node_modules/
+
+# Env files
+/client/.env*
+/server/.env*
+
+# Next.js build (client-side)
+/client/.next/
+/client/out/
+
+# Nest.js build (server-side)
+/server/dist/
+/server/coverage/
+
+# Build folders
+build/
+dist/
+
+# Vercel deployment
+.vercel/
+
+# Yarn specific
+>>>>>>> develop
 .pnp.*
 .yarn/*
 !.yarn/patches
@@ -11,6 +49,7 @@
 !.yarn/releases
 !.yarn/versions
 
+<<<<<<< HEAD
 # testing
 /coverage
 
@@ -40,3 +79,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+=======
+# VS Code settings (optional)
+.vscode/
+
+# Generated types
+/client/next-env.d.ts
+
+# Others
+.pnpm-debug.log*
+>>>>>>> develop
