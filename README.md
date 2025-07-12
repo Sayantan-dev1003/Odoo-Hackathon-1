@@ -1,6 +1,12 @@
-Team Name - Decepticons
-Problem statement 1 - Skill Swap Platform
 # SkillLink - Peer-to-Peer Skill Exchange Platform
+
+**Team Name:** Decepticons  
+**Problem Statement:** Skill Swap Platform  
+**Team Members:**
+- Member 1 Sayantan Halder
+- Member 2 Prithviraj Verma
+- Member 3 Chandan Bishoyi
+- Member 4 Nirmal Joshi
 
 A modern, responsive web application built with Next.js and Tailwind CSS (frontend) and NestJS with MongoDB (backend) that enables users to exchange skills with each other in a peer-to-peer learning environment.
 
@@ -32,29 +38,55 @@ A modern, responsive web application built with Next.js and Tailwind CSS (fronte
 - **HTTP Client**: Axios for API communication
 - **Notifications**: React Hot Toast
 - **Icons**: Heroicons (SVG icons)
-- **Animations**: CSS transitions and custom keyframes
+- **Animations**: Framer motions, CSS transitions and custom keyframes
 
 ## 📁 Project Structure
 
 ```
 skill-link/
-├── client/                  # Next.js 15 frontend
+├── client/                        # Frontend (Next.js 15, Tailwind CSS, TypeScript)
+│   ├── public/                    # Static assets (images, favicon, etc.)
 │   ├── src/
-│   │   ├── app/             # App Router pages (admin, browse, profile, swaps, etc.)
-│   │   ├── components/      # Reusable React components
-│   │   ├── utils/           # Utilities and API service
-│   │   └── styles/          # Global and component CSS
-│   ├── public/              # Static assets
-│   ├── package.json         # Frontend dependencies
-│   └── tailwind.config.ts   # Tailwind configuration
-├── server/                  # NestJS backend
-│   ├── src/                 # Backend source code (controllers, modules, services)
-│   ├── test/                # Backend tests
-│   ├── package.json         # Backend dependencies
-│   └── nest-cli.json        # NestJS config
+│   │   ├── app/                   # App Router pages (admin, browse, profile, swaps, etc.)
+│   │   │   ├── admin/
+│   │   │   ├── browse/
+│   │   │   ├── profile/
+│   │   │   ├── swaps/
+│   │   │   ├── favicon.ico
+│   │   │   ├── globals.css        # Global styles
+│   │   │   ├── layout.tsx         # Root layout
+│   │   │   └── page.tsx           # Landing page
+│   │   ├── components/            # Reusable React components (Navbar, SkillCard, etc.)
+│   │   ├── utils/                 # Utilities and API service (api.ts, demo-data.ts)
+│   │   └── styles/                # Component and custom CSS (UiverseFeaturesCard.css, etc.)
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── tailwind.config.ts
+│   ├── tsconfig.json
+│   └── postcss.config.mjs
+├── server/                        # Backend (NestJS, TypeScript, MongoDB)
+│   ├── src/
+│   │   ├── app.controller.ts
+│   │   ├── app.controller.spec.ts
+│   │   ├── app.module.ts
+│   │   ├── app.service.ts
+│   │   └── main.ts
+│   ├── test/
+│   │   ├── app.e2e-spec.ts
+│   │   └── jest-e2e.json
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── nest-cli.json
+│   ├── tsconfig.json
+│   └── tsconfig.build.json
 ├── README.md
-└── ... (other root files)
+└── (other root files)
 ```
+
+---
+
+**You can copy and paste this directly into your README.md under the “Project Structure” section for an accurate, up-to-date representation of your codebase!**  
+Let me know if you want this automatically inserted into your README.md.
 
 ## 🎨 Design System
 
@@ -110,7 +142,7 @@ The application is designed to work with a REST API. All API functions are centr
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/Sayantan-dev1003/Odoo-Hackathon-1.git
    cd skill-link
    ```
 
@@ -124,13 +156,14 @@ The application is designed to work with a REST API. All API functions are centr
 3. **Set up environment variables**
    - For the frontend: `client/.env.local`
      ```env
-     NEXT_PUBLIC_API_URL=http://localhost:3001/api
+     NEXT_PUBLIC_API_URL=http://localhost:3001/
      ```
    - For the backend: `server/.env`
      ```env
      MONGODB_URI=mongodb://localhost:27017/skilllink
      JWT_SECRET=your_jwt_secret
      PORT=3001
+     FRONTEND_URL=http://localhost:3000
      ```
 
 4. **Run the backend (NestJS API)**
