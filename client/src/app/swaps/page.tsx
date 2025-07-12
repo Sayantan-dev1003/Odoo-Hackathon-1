@@ -15,6 +15,10 @@ export default function SwapsPage() {
   const [selectedSwap, setSelectedSwap] = useState<Swap | null>(null);
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState('');
+  const [conversationOpen, setConversationOpen] = useState(false);
+  const [conversationSwap, setConversationSwap] = useState<Swap | null>(null);
+  const [messages, setMessages] = useState<Array<{id: string, sender: string, message: string, timestamp: string}>>([]);
+  const [newMessage, setNewMessage] = useState('');
   const { user: currentUser } = useAuth();
 
   useEffect(() => {
@@ -43,6 +47,30 @@ export default function SwapsPage() {
         const result = await apiService.acceptSwap(swapId);
         console.log('Accept swap result:', result);
         toast.success('Swap accepted successfully! 🎉');
+        
+        // Find the accepted swap and open conversation
+        const acceptedSwap = swapRequests.find(s => s._id === swapId);
+        if (acceptedSwap) {
+          setConversationSwap(acceptedSwap);
+          setConversationOpen(true);
+          
+          // Initialize dummy conversation
+          const partner = currentUser ? getSwapPartner(acceptedSwap, currentUser._id) : acceptedSwap.requesterId;
+          setMessages([
+            {
+              id: '1',
+              sender: partner.firstName,
+              message: `Hi ${currentUser?.firstName}! Thanks for accepting my swap request. I'm excited to learn ${acceptedSwap.requestedSkill} from you!`,
+              timestamp: new Date().toLocaleTimeString()
+            },
+            {
+              id: '2',
+              sender: 'You',
+              message: `Hello ${partner.firstName}! I'm looking forward to teaching you ${acceptedSwap.requestedSkill} and learning ${acceptedSwap.offeredSkill} from you. When would be a good time to start?`,
+              timestamp: new Date().toLocaleTimeString()
+            }
+          ]);
+        }
       } else {
         const result = await apiService.rejectSwap(swapId);
         console.log('Reject swap result:', result);
@@ -136,6 +164,47 @@ export default function SwapsPage() {
 
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
+  };
+
+  const sendMessage = () => {
+    if (newMessage.trim() && conversationSwap && currentUser) {
+      const message = {
+        id: Date.now().toString(),
+        sender: 'You',
+        message: newMessage.trim(),
+        timestamp: new Date().toLocaleTimeString()
+      };
+      setMessages(prev => [...prev, message]);
+      setNewMessage('');
+      
+      // Simulate partner response after 2 seconds
+      setTimeout(() => {
+        const partner = getSwapPartner(conversationSwap, currentUser._id);
+        const responses = [
+          "That sounds great! I'm available this weekend.",
+          "Perfect! Let me know what materials I should prepare.",
+          "I'm excited to get started. Should we do video calls?",
+          "Thanks for the quick response! Looking forward to learning.",
+          "That works for me. What's the best way to contact you?"
+        ];
+        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+        
+        const partnerMessage = {
+          id: (Date.now() + 1).toString(),
+          sender: partner.firstName,
+          message: randomResponse,
+          timestamp: new Date().toLocaleTimeString()
+        };
+        setMessages(prev => [...prev, partnerMessage]);
+      }, 2000);
+    }
+  };
+
+  const closeConversation = () => {
+    setConversationOpen(false);
+    setConversationSwap(null);
+    setMessages([]);
+    setNewMessage('');
   };
 
   const getStatusColor = (status: string) => {
@@ -446,6 +515,96 @@ export default function SwapsPage() {
             </div>
           </div>
         </div>
+
+        {/* Conversation Modal */}
+        {conversationOpen && conversationSwap && currentUser && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full h-[600px] shadow-2xl animate-fade-in-up flex flex-col">
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                    {getInitials(`${getSwapPartner(conversationSwap, currentUser._id).firstName} ${getSwapPartner(conversationSwap, currentUser._id).lastName}`)}
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                      Chat with {getSwapPartner(conversationSwap, currentUser._id).firstName}
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Skill Exchange: {conversationSwap.requestedSkill} ↔ {conversationSwap.offeredSkill}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={closeConversation}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Messages */}
+              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                {messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`flex ${message.sender === 'You' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div
+                      className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                        message.sender === 'You'
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
+                      }`}
+                    >
+                      <p className="text-sm">{message.message}</p>
+                      <p className={`text-xs mt-1 ${
+                        message.sender === 'You' ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'
+                      }`}>
+                        {message.timestamp}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Message Input */}
+              <div className="p-6 border-t border-gray-200 dark:border-gray-700">
+                <div className="flex space-x-4">
+                  <input
+                    type="text"
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                    placeholder="Type your message..."
+                    className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                  />
+                  <button
+                    onClick={sendMessage}
+                    disabled={!newMessage.trim()}
+                    className="px-6 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+                  >
+                    Send
+                  </button>
+                </div>
+                <div className="mt-4 flex justify-center">
+                  <button
+                    onClick={() => {
+                      closeConversation();
+                      // Simulate moving to active tab
+                      setActiveTab('accepted');
+                    }}
+                    className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
+                  >
+                    ✅ Start Learning Session
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Rating Modal */}
         {ratingModalOpen && selectedSwap && (

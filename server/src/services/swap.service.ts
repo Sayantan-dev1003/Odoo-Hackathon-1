@@ -69,14 +69,17 @@ export class SwapService {
     console.log('AcceptSwap called with:', { id, userId });
     
     const swap = await this.findById(id);
+    // Extract ObjectId from populated user objects
+    const providerIdString = swap.providerId._id ? swap.providerId._id.toString() : swap.providerId.toString();
     console.log('Found swap:', {
-      requesterId: swap.requesterId.toString(),
-      providerId: swap.providerId.toString(),
+      requesterId: swap.requesterId._id ? swap.requesterId._id.toString() : swap.requesterId.toString(),
+      providerId: providerIdString,
       status: swap.status,
-      userId: userId
+      userId: userId,
+      match: providerIdString === userId
     });
 
-    if (swap.providerId.toString() !== userId) {
+    if (providerIdString !== userId) {
       console.log('Authorization failed: User is not the provider');
       throw new BadRequestException('Only the provider can accept this swap');
     }
@@ -93,7 +96,8 @@ export class SwapService {
   async rejectSwap(id: string, userId: string): Promise<Swap> {
     const swap = await this.findById(id);
 
-    if (swap.providerId.toString() !== userId) {
+    const providerIdString = swap.providerId._id ? swap.providerId._id.toString() : swap.providerId.toString();
+    if (providerIdString !== userId) {
       throw new BadRequestException('Only the provider can reject this swap');
     }
 
@@ -107,11 +111,10 @@ export class SwapService {
   async completeSwap(id: string, userId: string): Promise<Swap> {
     const swap = await this.findById(id);
 
-    if (
-      ![swap.requesterId.toString(), swap.providerId.toString()].includes(
-        userId,
-      )
-    ) {
+    const requesterIdString = swap.requesterId._id ? swap.requesterId._id.toString() : swap.requesterId.toString();
+    const providerIdString = swap.providerId._id ? swap.providerId._id.toString() : swap.providerId.toString();
+    
+    if (![requesterIdString, providerIdString].includes(userId)) {
       throw new BadRequestException(
         'Only swap participants can complete this swap',
       );
@@ -130,11 +133,10 @@ export class SwapService {
   async cancelSwap(id: string, userId: string): Promise<Swap> {
     const swap = await this.findById(id);
 
-    if (
-      ![swap.requesterId.toString(), swap.providerId.toString()].includes(
-        userId,
-      )
-    ) {
+    const requesterIdString = swap.requesterId._id ? swap.requesterId._id.toString() : swap.requesterId.toString();
+    const providerIdString = swap.providerId._id ? swap.providerId._id.toString() : swap.providerId.toString();
+    
+    if (![requesterIdString, providerIdString].includes(userId)) {
       throw new BadRequestException(
         'Only swap participants can cancel this swap',
       );
