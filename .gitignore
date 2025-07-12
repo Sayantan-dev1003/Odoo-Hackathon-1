@@ -1,91 +1,227 @@
-<<<<<<< HEAD
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Dependencies
+node_modules/
+*/node_modules/
+**/node_modules/
 
-# dependencies
-/client/node_modules
-/server/node_modules
-/.pnp
-=======
-# General
-.DS_Store
-*.pem
-*.tsbuildinfo
+# Production builds
+/client/.next/
+/client/out/
+/client/build/
+/server/dist/
+/server/build/
+dist/
+build/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+/client/.env*
+/server/.env*
+**/.env*
 
 # Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+lerna-debug.log*
+logs
+*.log
 
-# Dependency folders
-/client/node_modules/
-/server/node_modules/
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
 
-# Env files
-/client/.env*
-/server/.env*
+# Coverage directory used by tools like istanbul
+coverage/
+*/coverage/
+**/coverage/
+*.lcov
 
-# Next.js build (client-side)
-/client/.next/
-/client/out/
+# nyc test coverage
+.nyc_output
 
-# Nest.js build (server-side)
-/server/dist/
-/server/coverage/
+# Dependency directories
+jspm_packages/
 
-# Build folders
-build/
-dist/
+# Optional npm cache directory
+.npm
 
-# Vercel deployment
-.vercel/
+# Optional eslint cache
+.eslintcache
 
-# Yarn specific
->>>>>>> develop
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+# Optional stylelint cache
+.stylelintcache
 
-<<<<<<< HEAD
-# testing
-/coverage
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
 
-# next.js
-/.next/
-/out/
+# Optional REPL history
+.node_repl_history
 
-# production
-/build
+# Output of 'npm pack'
+*.tgz
 
-# misc
+# Yarn Integrity file
+.yarn-integrity
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+out
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+public
+
+# Storybook build outputs
+.out
+.storybook-out
+storybook-static
+
+# Temporary folders
+tmp/
+temp/
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
 .DS_Store
-*.pem
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
-# debug
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Vercel
+.vercel
+
+# Turbo
+.turbo
+
+# Local Netlify folder
+.netlify
+
+# Sentry Config File
+.sentryclirc
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Backup files
+*.bak
+*.backup
+
+# Lock files (keep package-lock.json but ignore others)
+yarn.lock
+pnpm-lock.yaml
+
+# Testing
+/coverage
+/.nyc_output
+
+# Misc
+*.tgz
+*.tar.gz
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local development
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# Optional npm cache directory
+.npm
 
-# vercel
-.vercel
+# Optional eslint cache
+.eslintcache
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-=======
-# VS Code settings (optional)
-.vscode/
+# Optional REPL history
+.node_repl_history
 
-# Generated types
-/client/next-env.d.ts
+# Output of 'npm pack'
+*.tgz
 
-# Others
-.pnpm-debug.log*
->>>>>>> develop
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+.env.test
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# next.js build output
+.next
+
+# nuxt.js build output
+.nuxt
+
+# vuepress build output
+.vuepress/dist
+
+# Serverless directories
+.serverless/
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*

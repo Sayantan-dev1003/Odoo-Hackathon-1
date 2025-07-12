@@ -1,7 +1,5 @@
-<<<<<<< HEAD
 Team Name - Decepticons
 Problem statement 1 - Skill Swap Platform
-=======
 # SkillLink - Peer-to-Peer Skill Exchange Platform
 
 A modern, responsive web application built with Next.js and Tailwind CSS that enables users to exchange skills with each other in a peer-to-peer learning environment.
@@ -245,4 +243,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **Built with ❤️ by the SkillLink team**
->>>>>>> develop
