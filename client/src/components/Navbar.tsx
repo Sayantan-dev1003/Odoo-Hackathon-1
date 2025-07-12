@@ -37,9 +37,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-2 rounded-lg">
-              <span className="text-white font-bold text-xl">SL</span>
-            </div>
+          <img src="../favicon.ico" alt="Logo" className="h-12 w-12 border rounded-xl object-contain" />
             <span className="text-xl font-bold text-gray-900 dark:text-white">
               SkillLink
             </span>

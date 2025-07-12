@@ -73,7 +73,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up" style={{ animationDelay: '900ms' }}>
               <Link
                 href="/browse"
-                className="group bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 hover-lift"
+                className="hover:bg-gradient-to-r hover:from-white hover:to-white hover:transition hover:ease-in-out hover:duration-100 hover:scale-105 text-black hover:text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg bg-gradient-to-r from-slate-400 to-white transition-colors duration-200 shadow-lg"
               >
                 <span className="flex items-center justify-center gap-2">
                   Browse Skills
