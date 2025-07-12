@@ -70,7 +70,7 @@ const AboutSection = () => {
         {/* Features Grid */}
         <div className="text-center mb-16">
           <h3 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            Why Choose SkillLink?
+            Why Choose <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">SkillLink</span>?
           </h3>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Discover the unique features that make SkillLink the perfect platform for skill exchange

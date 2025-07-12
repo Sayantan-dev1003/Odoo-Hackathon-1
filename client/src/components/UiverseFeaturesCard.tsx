@@ -1,5 +1,4 @@
 import React from 'react';
-import '@/styles/UiverseFeaturesCard.css';
 
 interface UiverseFeaturesCardProps {
   children: React.ReactNode;

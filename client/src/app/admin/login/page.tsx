@@ -40,8 +40,12 @@ export default function AdminLoginPage() {
           router.push('/');
         }
       }
-    } catch (error: any) {
-      toast.error(error.message || 'Login failed');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message || 'Login failed');
+      } else {
+        toast.error('Login failed');
+      }
     } finally {
       setIsLoading(false);
     }

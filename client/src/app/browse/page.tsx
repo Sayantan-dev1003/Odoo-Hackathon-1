@@ -279,7 +279,7 @@ function BrowseContent() {
                 <>
                   Found <span className="font-semibold text-blue-600 dark:text-blue-400">{filteredUsers.length}</span> {filteredUsers.length === 1 ? 'person' : 'people'}
                   {searchTerm && (
-                    <span className="text-gray-500"> matching "{searchTerm}"</span>
+                    <span className="text-gray-500"> matching {searchTerm}</span>
                   )}
                 </>
               )}

@@ -59,8 +59,12 @@ export default function LoginPage() {
         toast.success('Registration successful!');
         router.push('/profile');
       }
-    } catch (error: any) {
-      toast.error(error.message || 'Authentication failed');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message || 'Authentication failed');
+      } else {
+        toast.error('Authentication failed');
+      }
     } finally {
       setIsLoading(false);
     }
