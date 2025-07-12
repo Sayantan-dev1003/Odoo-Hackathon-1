@@ -1,8 +1,6 @@
 import Link from 'next/link';
-import UiverseFeaturesCard from '../components/Uiversecard';
-import StatCounter from '../components/StatCounter'; // adjust path as needed
-
-
+import UiverseFeaturesCard from '../components/UiverseFeaturesCard';
+import StatCounter from '../components/StatCounter';
 
 export default function Home() {
   return (

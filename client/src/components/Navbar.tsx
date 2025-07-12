@@ -3,13 +3,11 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
-// import { useAuth } from '@/contexts/AuthContext';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const pathname = usePathname();
-  // const { user, logout } = useAuth();
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);

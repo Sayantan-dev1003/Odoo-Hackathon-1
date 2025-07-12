@@ -4,7 +4,16 @@ import React, { useEffect, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { useMotionValue, animate } from 'framer-motion';
 
-const StatCounter = ({
+interface StatCounterProps {
+  from?: number;
+  to: number;
+  duration?: number;
+  prefix?: string;
+  suffix?: string;
+  className?: string;
+}
+
+const StatCounter: React.FC<StatCounterProps> = ({
   from = 0,
   to,
   duration = 2,
@@ -13,14 +22,14 @@ const StatCounter = ({
   className = '',
 }) => {
   const count = useMotionValue(from);
-  const [display, setDisplay] = useState(from);
+  const [display, setDisplay] = useState<number>(from);
   const { ref, inView } = useInView({ triggerOnce: true });
 
   useEffect(() => {
     if (inView) {
       const controls = animate(count, to, {
         duration,
-        onUpdate: (latest) => {
+        onUpdate: (latest: number) => {
           setDisplay(Math.floor(latest));
         },
       });
@@ -37,4 +46,4 @@ const StatCounter = ({
   );
 };
 
-export default StatCounter;
+export default StatCounter; 
