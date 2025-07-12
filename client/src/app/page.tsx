@@ -1,5 +1,4 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import UiverseFeaturesCard from '../components/UiverseFeaturesCard';
@@ -39,6 +38,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen overflow-hidden">
+
       {/* Floating Background Elements */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-10 left-10 w-32 h-32 bg-blue-500/10 rounded-full blur-xl animate-float"></div>
@@ -48,7 +48,7 @@ export default function Home() {
       </div>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white overflow-hidden">
+      <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white overflow-hidden"> 
         {/* Animated Background Pattern */}
         <div className="absolute inset-0 opacity-20">
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer"></div>
@@ -154,7 +154,7 @@ export default function Home() {
               <UiverseFeaturesCard>
                 <div className="text-center">
                   <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-8 h-8 text-[#ffffff]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                   </div>
@@ -284,28 +284,28 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section id="animate-stats" className="py-16 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+      <section id="animate-stats" className="py-16 bg-gradient-to-r from-gray-50 to-gray-100   dark:from-gray-900 dark:to-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className={`grid md:grid-cols-4 gap-8 text-center transition-all duration-1000 ${isVisible['animate-stats'] ? 'animate-fade-in-up' : 'opacity-0 translate-y-10'}`}>
-            <div className="hover-lift">
+            <div className="hover-lift border-transparent rounded-xl p-4 pt-6">
               <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent mb-2">
                 <StatCounter to={1200} duration={2} suffix="+" />
               </div>
               <div className="text-gray-600 dark:text-gray-300">Active Users</div>
             </div>
-            <div className="hover-lift">
+            <div className="hover-lift border-transparent rounded-xl p-4 pt-6">
               <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent mb-2">
                 <StatCounter to={500} duration={2} suffix="+" />
               </div>
               <div className="text-gray-600 dark:text-gray-300">Skills Available</div>
             </div>
-            <div className="hover-lift">
+            <div className="hover-lift border-transparent rounded-xl p-4 pt-6">
               <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent mb-2">
                 <StatCounter to={2800} duration={2.5} suffix="+" />
               </div>
               <div className="text-gray-600 dark:text-gray-300">Successful Swaps</div>
             </div>
-            <div className="hover-lift">
+            <div className="hover-lift border-transparent rounded-xl p-4 pt-6">
               <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-yellow-600 to-yellow-700 bg-clip-text text-transparent mb-2">
                 <StatCounter to={4.8} duration={1.5} suffix="★" />
               </div>
