@@ -36,17 +36,39 @@ export default function SwapsPage() {
 
   const handleSwapAction = async (swapId: string, action: 'accepted' | 'rejected') => {
     try {
+      console.log(`Attempting to ${action} swap:`, swapId);
+      console.log('Current user:', currentUser);
+      
       if (action === 'accepted') {
-        await apiService.acceptSwap(swapId);
+        const result = await apiService.acceptSwap(swapId);
+        console.log('Accept swap result:', result);
         toast.success('Swap accepted successfully! 🎉');
       } else {
-        await apiService.rejectSwap(swapId);
+        const result = await apiService.rejectSwap(swapId);
+        console.log('Reject swap result:', result);
         toast.success('Swap declined');
       }
-      fetchSwapRequests();
-    } catch (error) {
+      
+      // Refresh the swaps list
+      await fetchSwapRequests();
+    } catch (error: any) {
       console.error(`Error ${action} swap:`, error);
-      toast.error(`Failed to ${action} swap`);
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response,
+        status: error.status
+      });
+      
+      // More specific error messages
+      if (error.message?.includes('Only the provider can accept')) {
+        toast.error('You can only accept swaps that were sent to you');
+      } else if (error.message?.includes('not in pending status')) {
+        toast.error('This swap is no longer pending');
+      } else if (error.message?.includes('Unauthorized')) {
+        toast.error('Please log in to perform this action');
+      } else {
+        toast.error(`Failed to ${action} swap: ${error.message || 'Unknown error'}`);
+      }
     }
   };
 
@@ -142,6 +164,17 @@ export default function SwapsPage() {
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto animate-fade-in-up" style={{ animationDelay: '200ms' }}>
               Manage your skill exchange requests and partnerships
             </p>
+            
+            {/* Debug refresh button */}
+            {process.env.NODE_ENV === 'development' && (
+              <button
+                onClick={fetchSwapRequests}
+                className="mt-4 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+              >
+                🔄 Refresh Swaps
+              </button>
+            )}
+            
             <div className="mt-6 flex justify-center space-x-4 animate-fade-in-up" style={{ animationDelay: '400ms' }}>
               <div className="flex items-center space-x-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 rounded-full">
                 <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -158,7 +191,35 @@ export default function SwapsPage() {
             </div>
           </div>
 
-          {/* Tabs */}
+        {/* Debug Panel - Remove this after fixing */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4 mb-8">
+            <h3 className="text-sm font-semibold text-yellow-800 dark:text-yellow-200 mb-2">Debug Information</h3>
+            <div className="text-xs text-yellow-700 dark:text-yellow-300">
+              <p>Current User ID: {currentUser?._id}</p>
+              <p>Total Swaps: {swapRequests.length}</p>
+              <p>Pending Swaps: {swapRequests.filter(s => s.status === 'pending').length}</p>
+              <p>Active Tab: {activeTab}</p>
+              <p>Filtered Swaps: {filteredSwaps.length}</p>
+              {filteredSwaps.length > 0 && (
+                <div className="mt-2">
+                  <p className="font-semibold">First Swap Details:</p>
+                  <pre className="text-xs bg-yellow-100 dark:bg-yellow-800 p-2 rounded mt-1">
+                    {JSON.stringify({
+                      id: filteredSwaps[0]._id,
+                      requesterId: filteredSwaps[0].requesterId._id,
+                      providerId: filteredSwaps[0].providerId._id,
+                      status: filteredSwaps[0].status,
+                      isSentByCurrentUser: currentUser ? isSwapSentByCurrentUser(filteredSwaps[0], currentUser._id) : false
+                    }, null, 2)}
+                  </pre>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Tabs */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl mb-8 animate-fade-in-up" style={{ animationDelay: '600ms' }}>
             <div className="border-b border-gray-200 dark:border-gray-700">
               <nav className="flex space-x-8 px-6" aria-label="Tabs">
@@ -357,6 +418,15 @@ export default function SwapsPage() {
 
                         {/* Actions */}
                         <div className="flex justify-end space-x-3">
+                          {/* Debug info for development */}
+                          {process.env.NODE_ENV === 'development' && (
+                            <div className="text-xs text-gray-500 mr-4">
+                              <p>Status: {swap.status}</p>
+                              <p>Sent by me: {isSentByMe ? 'Yes' : 'No'}</p>
+                              <p>Show buttons: {(swap.status === 'pending' && !isSentByMe) ? 'Yes' : 'No'}</p>
+                            </div>
+                          )}
+                          
                           {swap.status === 'pending' && !isSentByMe && (
                             <>
                               <button
@@ -372,6 +442,12 @@ export default function SwapsPage() {
                                 Accept
                               </button>
                             </>
+                          )}
+                          
+                          {swap.status === 'pending' && isSentByMe && (
+                            <div className="text-sm text-gray-500 dark:text-gray-400 italic">
+                              Waiting for response...
+                            </div>
                           )}
                           
                           {swap.status === 'accepted' && (

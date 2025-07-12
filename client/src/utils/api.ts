@@ -103,17 +103,30 @@ class ApiService {
       Object.assign(headers, options.headers);
     }
 
+    console.log('Making API request:', { url, method: options.method || 'GET', headers });
+
     const response = await fetch(url, {
       ...options,
       headers,
     });
 
+    console.log('API response:', { status: response.status, statusText: response.statusText });
+
     if (!response.ok) {
       const error = await response.json().catch(() => ({ message: 'Network error' }));
-      throw new Error(error.message || `HTTP error! status: ${response.status}`);
+      console.error('API error response:', error);
+      
+      const errorMessage = error.message || `HTTP error! status: ${response.status}`;
+      const customError = new Error(errorMessage);
+      (customError as any).response = error;
+      (customError as any).status = response.status;
+      
+      throw customError;
     }
 
-    return response.json();
+    const result = await response.json();
+    console.log('API success response:', result);
+    return result;
   }
 
   // Auth endpoints

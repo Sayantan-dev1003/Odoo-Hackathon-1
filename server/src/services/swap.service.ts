@@ -66,16 +66,27 @@ export class SwapService {
   }
 
   async acceptSwap(id: string, userId: string): Promise<Swap> {
+    console.log('AcceptSwap called with:', { id, userId });
+    
     const swap = await this.findById(id);
+    console.log('Found swap:', {
+      requesterId: swap.requesterId.toString(),
+      providerId: swap.providerId.toString(),
+      status: swap.status,
+      userId: userId
+    });
 
     if (swap.providerId.toString() !== userId) {
+      console.log('Authorization failed: User is not the provider');
       throw new BadRequestException('Only the provider can accept this swap');
     }
 
     if (swap.status !== SwapStatus.PENDING) {
+      console.log('Status check failed: Swap is not pending');
       throw new BadRequestException('Swap is not in pending status');
     }
 
+    console.log('Updating swap status to ACCEPTED');
     return this.update(id, { status: SwapStatus.ACCEPTED });
   }
 

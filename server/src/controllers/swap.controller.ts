@@ -43,8 +43,16 @@ export class SwapController {
 
   @Patch(':id/accept')
   async acceptSwap(@Param('id') id: string, @Request() req) {
-    const swap = await this.swapService.acceptSwap(id, req.user.userId);
-    return { message: 'Swap accepted successfully', swap };
+    console.log('Accept swap request:', { id, user: req.user });
+    
+    try {
+      const swap = await this.swapService.acceptSwap(id, req.user.userId);
+      console.log('Swap accepted successfully:', swap);
+      return { message: 'Swap accepted successfully', swap };
+    } catch (error) {
+      console.error('Error accepting swap:', error);
+      throw error;
+    }
   }
 
   @Patch(':id/reject')
