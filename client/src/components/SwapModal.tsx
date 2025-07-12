@@ -194,7 +194,7 @@ const SwapModal = ({ isOpen, onClose, user, currentUser, onConfirm }: SwapModalP
 
           {/* Message */}
           <div>
-            <label htmlFor="message" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+            <label htmlFor="message" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               Personal Message (Optional)
             </label>
             <textarea
@@ -220,7 +220,7 @@ const SwapModal = ({ isOpen, onClose, user, currentUser, onConfirm }: SwapModalP
           </div>
 
           {/* Action Buttons */}
-          <div className="flex space-x-4 pt-4">
+          <div className="flex space-x-4">
             <button
               type="button"
               onClick={onClose}
