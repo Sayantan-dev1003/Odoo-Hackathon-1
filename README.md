@@ -1,8 +1,14 @@
-Team Name - Decepticons
-Problem statement 1 - Skill Swap Platform
 # SkillLink - Peer-to-Peer Skill Exchange Platform
 
-A modern, responsive web application built with Next.js and Tailwind CSS that enables users to exchange skills with each other in a peer-to-peer learning environment.
+**Team Name:** Decepticons  
+**Problem Statement:** Skill Swap Platform  
+**Team Members:**
+- Member 1 Sayantan Halder
+- Member 2 Prithviraj Verma
+- Member 3 Chandan Bishoyi
+- Member 4 Nirmal Joshi
+
+A modern, responsive web application built with Next.js and Tailwind CSS (frontend) and NestJS with MongoDB (backend) that enables users to exchange skills with each other in a peer-to-peer learning environment.
 
 ## 🚀 Features
 
@@ -24,40 +30,63 @@ A modern, responsive web application built with Next.js and Tailwind CSS that en
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: Next.js 15 with App Router
+- **Frontend**: Next.js 15 (App Router) in `client/`
 - **Styling**: Tailwind CSS with custom components
-- **Language**: TypeScript for type safety
+- **Language**: TypeScript (frontend & backend)
+- **Backend**: NestJS (Node.js) in `server/`
+- **Database**: MongoDB
 - **HTTP Client**: Axios for API communication
 - **Notifications**: React Hot Toast
 - **Icons**: Heroicons (SVG icons)
-- **Animations**: CSS transitions and custom keyframes
+- **Animations**: Framer motions, CSS transitions and custom keyframes
 
 ## 📁 Project Structure
 
 ```
-skilllink/
-├── src/
-│   ├── app/                    # Next.js App Router pages
-│   │   ├── admin/             # Admin panel
-│   │   ├── browse/            # Browse users page
-│   │   ├── profile/           # User profile page
-│   │   ├── swaps/             # Swap management page
-│   │   ├── layout.tsx         # Root layout
-│   │   ├── page.tsx           # Landing page
-│   │   └── globals.css        # Global styles
-│   ├── components/            # Reusable components
-│   │   ├── Navbar.tsx         # Navigation component
-│   │   ├── SkillCard.tsx      # User skill card
-│   │   ├── SwapModal.tsx      # Swap request modal
-│   │   ├── UserForm.tsx       # Profile form
-│   │   └── RatingStars.tsx    # Rating component
-│   └── utils/                 # Utilities and API
-│       ├── api.ts             # API functions and types
-│       └── demo-data.ts       # Demo data for testing
-├── public/                    # Static assets
-├── package.json              # Dependencies
-└── tailwind.config.ts        # Tailwind configuration
+skill-link/
+├── client/                        # Frontend (Next.js 15, Tailwind CSS, TypeScript)
+│   ├── public/                    # Static assets (images, favicon, etc.)
+│   ├── src/
+│   │   ├── app/                   # App Router pages (admin, browse, profile, swaps, etc.)
+│   │   │   ├── admin/
+│   │   │   ├── browse/
+│   │   │   ├── profile/
+│   │   │   ├── swaps/
+│   │   │   ├── favicon.ico
+│   │   │   ├── globals.css        # Global styles
+│   │   │   ├── layout.tsx         # Root layout
+│   │   │   └── page.tsx           # Landing page
+│   │   ├── components/            # Reusable React components (Navbar, SkillCard, etc.)
+│   │   ├── utils/                 # Utilities and API service (api.ts, demo-data.ts)
+│   │   └── styles/                # Component and custom CSS (UiverseFeaturesCard.css, etc.)
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── tailwind.config.ts
+│   ├── tsconfig.json
+│   └── postcss.config.mjs
+├── server/                        # Backend (NestJS, TypeScript, MongoDB)
+│   ├── src/
+│   │   ├── app.controller.ts
+│   │   ├── app.controller.spec.ts
+│   │   ├── app.module.ts
+│   │   ├── app.service.ts
+│   │   └── main.ts
+│   ├── test/
+│   │   ├── app.e2e-spec.ts
+│   │   └── jest-e2e.json
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── nest-cli.json
+│   ├── tsconfig.json
+│   └── tsconfig.build.json
+├── README.md
+└── (other root files)
 ```
+
+---
+
+**You can copy and paste this directly into your README.md under the “Project Structure” section for an accurate, up-to-date representation of your codebase!**  
+Let me know if you want this automatically inserted into your README.md.
 
 ## 🎨 Design System
 
@@ -81,7 +110,7 @@ skilllink/
 
 ## 🔧 API Integration
 
-The application is designed to work with a REST API. All API functions are centralized in `src/utils/api.ts`:
+The application is designed to work with a REST API. All API functions are centralized in `client/src/utils/api.ts`:
 
 ### User Management
 - `GET /api/users` - Get all users
@@ -107,40 +136,54 @@ The application is designed to work with a REST API. All API functions are centr
 ### Prerequisites
 - Node.js 18+ 
 - npm or yarn
+- MongoDB (local or cloud)
 
 ### Installation
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd skilllink
+   git clone https://github.com/Sayantan-dev1003/Odoo-Hackathon-1.git
+   cd skill-link
    ```
 
-2. **Install dependencies**
+2. **Install dependencies for both frontend and backend**
    ```bash
-   npm install
+   cd client && npm install
+   cd ../server && npm install
+   cd ..
    ```
 
 3. **Set up environment variables**
+   - For the frontend: `client/.env.local`
+     ```env
+     NEXT_PUBLIC_API_URL=http://localhost:3001/
+     ```
+   - For the backend: `server/.env`
+     ```env
+     MONGODB_URI=mongodb://localhost:27017/skilllink
+     JWT_SECRET=your_jwt_secret
+     PORT=3001
+     FRONTEND_URL=http://localhost:3000
+     ```
+
+4. **Run the backend (NestJS API)**
    ```bash
-   cp .env.example .env.local
-   ```
-   
-   Add your API URL:
-   ```
-   NEXT_PUBLIC_API_URL=http://localhost:3001/api
+   cd server
+   npm run start:dev
    ```
 
-4. **Run the development server**
+5. **Run the frontend (Next.js app)**
    ```bash
+   cd client
    npm run dev
    ```
 
-5. **Open your browser**
+6. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000)
 
 ### Development Scripts
 
+**Frontend (client):**
 ```bash
 npm run dev          # Start development server
 npm run build        # Build for production
@@ -149,7 +192,15 @@ npm run lint         # Run ESLint
 npm run type-check   # Run TypeScript type checking
 ```
 
-## 📱 Pages Overview
+**Backend (server):**
+```bash
+npm run start:dev    # Start NestJS in development mode
+npm run build        # Build for production
+npm run start        # Start production server
+npm run test         # Run backend tests
+```
+
+## 📱 Pages Overview (Frontend)
 
 ### Landing Page (`/`)
 - Hero section with call-to-action buttons

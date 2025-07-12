@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import '@/styles/globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
-import Navbar from '@/components/Navbar';
 import { Toaster } from 'react-hot-toast';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -18,10 +17,9 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <AuthProvider>
-          <Navbar />
           <main className="min-h-screen bg-gray-100 dark:bg-gray-900">
             {children}
           </main>
